@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 tests/
+test.py
 build/
 develop-eggs/
 dist/
