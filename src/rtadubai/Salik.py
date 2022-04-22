@@ -14,6 +14,9 @@ def Expiry(plate):
     if plate[0].isalpha() and len(plate) <= 6:
         plate_code = plate[0]
         plate_no = plate[1:]
+    elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
+        plate_code = plate[0:2]
+        plate_no = plate[2:]
 
     data = {
         'plateCode': plate_code,
@@ -22,5 +25,7 @@ def Expiry(plate):
     }
     response = soup(requests.post(url, data=data))
     date = response.find(
-        'strong', class_='font-weight-bolder font-size-18').text
-    return datetime.datetime.date(datetime.datetime.strptime(date, '%d-%B-%Y')).strftime('%d/%m/%Y')
+        'strong', class_='font-weight-bolder font-size-18')
+    if date is None:
+        return response.find('b').text
+    return datetime.datetime.date(datetime.datetime.strptime(date.text, '%d-%B-%Y')).strftime('%d/%m/%Y')
