@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8SD_YM7uh4ZDXU8tUlk_I36a0qJnYkVZHC_Lj1DLADiUe_KpCLTIegJhCO49aSeT6jfU2v3JH7diE-DSg_ZuECRXtHt7jeJMNHqhpY9EzsAKjueU4jDq3pnBcpfb0uavhULE_gZGSjG-iv4P_YTbWsHnHGsPNzSZeykEn3ToHMy0WtwNillGrqO6U5kqll22xsS"
 url = 'https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7'
 
+code = {'A': 11, 'B': 12, 'C': 13, 'D': 14, 'E': 15, 'F': 16, 'G': 17, 'H': 18, 'I': 19, 'J': 20, 'K': 21, 'L': 22, 'M': 23,
+        'N': 63, 'O': 64, 'P': 65, 'Q': 66, 'R': 67, 'S': 68, 'T': 69, 'U': 70, 'V': 71, 'W': 72, 'X': 73, 'Y': 74, 'Z': 75, 'AA': 86}
+
+
 def soup(r):
     return BeautifulSoup(r.text, 'html.parser')
 
@@ -29,11 +33,14 @@ def Expiry(plate):
         return response.find('b').text
     return datetime.datetime.date(datetime.datetime.strptime(date.text, '%d-%B-%Y')).strftime('%d/%m/%Y')
 
-def Balance_Plate(plate,number):
+
+def Balance_Plate(plate, number):
 
     if plate[0].isalpha() and len(plate) <= 6:
+        plate_code = plate[0]
         plate_no = plate[1:]
     elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
+        plate_code = plate[0:2]
         plate_no = plate[2:]
 
     if number.startswith('+971'):
@@ -45,10 +52,12 @@ def Balance_Plate(plate,number):
     elif number.startswith('05'):
         number = number[2:]
 
-    
+    if plate_code.upper() in code:
+        plate_code = code[plate_code.upper()]
+
     data = {
         'salikSearchType': 'MobileAndPlate',
-        'salikPlateCode': '63',             #(idk what 63 is either but it works)
+        'salikPlateCode': plate_code,  # Should work now
         'salikPlateNo': plate_no,
         'salikMobileCountryCode': '971',
         'salikMobileNo': number,
@@ -60,8 +69,10 @@ def Balance_Plate(plate,number):
         return response.find('b').text
     return balance.text
 
-#Havent tested this yet
-def Balance_Account(account,pin):
+# Havent tested this yet
+
+
+def Balance_Account(account, pin):
     data = {
         'salikSearchType': 'AccountAndPin',
         'salikAccountNo': account,
