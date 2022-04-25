@@ -57,7 +57,7 @@ def Balance_Plate(plate, number):
 
     data = {
         'salikSearchType': 'MobileAndPlate',
-        'salikPlateCode': plate_code,  # Should work now
+        'salikPlateCode': plate_code,
         'salikPlateNo': plate_no,
         'salikMobileCountryCode': '971',
         'salikMobileNo': number,
