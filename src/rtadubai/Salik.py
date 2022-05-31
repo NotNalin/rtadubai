@@ -6,7 +6,8 @@ captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8S
 url = 'https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7'
 
 code = {'A': 11, 'B': 12, 'C': 13, 'D': 14, 'E': 15, 'F': 16, 'G': 17, 'H': 18, 'I': 19, 'J': 20, 'K': 21, 'L': 22, 'M': 23,
-        'N': 63, 'O': 64, 'P': 65, 'Q': 66, 'R': 67, 'S': 68, 'T': 69, 'U': 70, 'V': 71, 'W': 72, 'X': 73, 'Y': 74, 'Z': 75, 'AA': 86}
+        'N': 63, 'O': 64, 'P': 65, 'Q': 66, 'R': 67, 'S': 68, 'T': 69, 'U': 70, 'V': 71, 'W': 72, 'X': 73, 'Y': 74, 'Z': 75,
+        'AA': 86}
 
 
 def soup(r):
@@ -22,7 +23,7 @@ def Expiry(plate):
         plate_no = plate[2:]
 
     data = {
-        'plateCode': plate_code,
+        'plateCode': plate_code.upper(),
         'plateNo': plate_no,
         'captchaResponse': captcha
     }
@@ -50,7 +51,7 @@ def Balance_Plate(plate, number):
     elif number.startswith('00971'):
         number = number[5:]
     elif number.startswith('05'):
-        number = number[2:]
+        number = number[1:]
 
     if plate_code.upper() in code:
         plate_code = code[plate_code.upper()]
@@ -67,7 +68,7 @@ def Balance_Plate(plate, number):
     balance = response.find('strong', class_='font-weight-bolder font-size-18')
     if balance is None:
         return response.find('b').text
-    return balance.text
+    return balance.text[:-2]
 
 # Havent tested this yet
 
@@ -83,4 +84,4 @@ def Balance_Account(account, pin):
     balance = response.find('strong', class_='font-weight-bolder font-size-18')
     if balance is None:
         return response.find('b').text
-    return balance.text
+    return balance.text[:-2]
