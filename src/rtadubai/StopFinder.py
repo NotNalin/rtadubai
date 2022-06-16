@@ -42,7 +42,3 @@ class Stop:
         self.name = stop['name']
         self.coords = stop['coords']
         self.id = stop['id']
-
-        
-
-print(json.dumps(findstop("China 3")[0], indent=2))
