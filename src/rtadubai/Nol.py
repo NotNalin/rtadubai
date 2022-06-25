@@ -44,12 +44,12 @@ def CardBalance(nol):
 def Details(nol):
     response = soup(1, nol)
     r = response.find_all('strong', class_='font-weight-bolder font-size-18')
-    if r is not None:
+    if len(r) != 0:
         return {
             'NolID': nol,
             'Error': False,
-            'Card Balance': r[0].text + " AED",
-            'Pending Balance': r[1].text + " AED",
+            'Card Balance': r[0].text,
+            'Pending Balance': r[1].text,
             'Expiry Date': r[2].text
         }
     return {
@@ -80,8 +80,7 @@ def TransactionsRaw(nol):
     response = soup(2, nol)
     if response.find(id='nolhasErr') is None:
         data = response.find_all('span', class_='DataList')
-        Date = response.find_all(
-            'div', class_='col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col')
+        Date = response.find_all('div', class_='col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col')
         noTransactions = int(len(Date)/2)
         ReturnList = []
         for i in range(noTransactions):
@@ -105,3 +104,27 @@ def NoOfTransactions(nol):
     if type(response) is list:
         return len(response)
     return 0
+
+
+class Card:
+    def __init__(self, nol):
+        if isValid(nol):
+            details = Details(nol)
+            self.id = details['NolID']
+            self.balance = details['Card Balance']
+            self.pending = details['Pending Balance']
+            self.expiry = details['Expiry Date']
+        else:
+            details = Details(nol)
+            raise ValueError("Invalid NOL Card")
+
+    def __str__(self):
+        return self.id
+
+    def __repr__(self):
+        return self.id
+
+    def update(self):
+        details = Details(self.id)
+        self.balance = details['Card Balance']
+        self.pending = details['Pending Balance']
