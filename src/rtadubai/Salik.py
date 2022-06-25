@@ -1,5 +1,6 @@
 import requests
 import datetime
+import json
 from bs4 import BeautifulSoup
 
 captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8SD_YM7uh4ZDXU8tUlk_I36a0qJnYkVZHC_Lj1DLADiUe_KpCLTIegJhCO49aSeT6jfU2v3JH7diE-DSg_ZuECRXtHt7jeJMNHqhpY9EzsAKjueU4jDq3pnBcpfb0uavhULE_gZGSjG-iv4P_YTbWsHnHGsPNzSZeykEn3ToHMy0WtwNillGrqO6U5kqll22xsS"
@@ -35,14 +36,14 @@ def Expiry(plate):
     return datetime.datetime.date(datetime.datetime.strptime(date.text, '%d-%B-%Y')).strftime('%d/%m/%Y')
 
 
-def Balance_Plate(plate, number):
-
-    if plate[0].isalpha() and len(plate) <= 6:
-        plate_code = plate[0]
-        plate_no = plate[1:]
-    elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
-        plate_code = plate[0:2]
-        plate_no = plate[2:]
+def Balance_Plate(plate, number, AreaCode=1, PlateType=1):
+    if AreaCode == 1 and PlateType == 1:
+        if plate[0].isalpha() and len(plate) <= 6:
+            plate_code = plate[0]
+            plate_no = plate[1:]
+        elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
+            plate_code = plate[0:2]
+            plate_no = plate[2:]
 
     if number.startswith('+971'):
         number = number[4:]
@@ -57,22 +58,23 @@ def Balance_Plate(plate, number):
         plate_code = code[plate_code.upper()]
 
     data = {
-        'salikSearchType': 'MobileAndPlate',
-        'salikPlateCode': plate_code,
-        'salikPlateNo': plate_no,
-        'salikMobileCountryCode': '971',
-        'salikMobileNo': number,
-        'captchaResponse': captcha
+        'PlateSourceId': AreaCode,
+        'PlateCategoryId': PlateType,
+        'PlateColorId': plate_code,
+        'PlateNumber': plate_no,
+        'PlateCountry': 'AE',
+        'MobileCountryCode': '971',
+        'MobileNumber': number,
     }
-    response = soup(requests.post(url+'=NJgetSalikBalance=/', data=data))
-    balance = response.find('strong', class_='font-weight-bolder font-size-18')
-    if balance is None:
-        return response.find('b').text
-    return balance.text[:-2]
+    response = soup(requests.post('https://www.salik.rta.ae/surface/financial/balanceenquiry', data=data))
+    balance = json.loads(response.text)
+    if balance['Valid'] is True:
+        return balance['SalikCredit']
+    else:
+        return balance['BusinessErrorMessage']
+
 
 # Havent tested this yet
-
-
 def Balance_Account(account, pin):
     data = {
         'salikSearchType': 'AccountAndPin',
