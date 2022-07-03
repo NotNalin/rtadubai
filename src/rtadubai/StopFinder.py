@@ -26,7 +26,7 @@ def findstop(keyword, lang='en'):
 
 
 class Stop:
-    def __init__(self, name=None, coords=None, stop_id=None, stop=None):
+    def __init__(self, name=None, coords=None, stop_id=None, *, stop=None):
         if stop is None:
             if name != None:
                 if stop_id is None or coords is None:
