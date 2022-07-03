@@ -118,13 +118,16 @@ class Card:
             details = Details(nol)
             raise ValueError("Invalid NOL Card")
 
-    def __str__(self):
-        return self.id
-
     def __repr__(self):
-        return self.id
+        return f'Nol Card : {self.id}'
 
     def update(self):
         details = Details(self.id)
         self.balance = details['Card Balance']
         self.pending = details['Pending Balance']
+
+    def transactions(self):
+        return TransactionsRaw(self.id)
+
+    def recent(self, no=1):
+        return Recent(self.id, no)

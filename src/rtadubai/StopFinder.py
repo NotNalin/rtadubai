@@ -43,3 +43,6 @@ class Stop:
         self.name = stop['name']
         self.coords = stop['coords']
         self.id = stop['id']
+    
+    def __repr__(self):
+        return f'Stop : {self.name}'
