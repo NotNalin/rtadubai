@@ -1,6 +1,5 @@
-from bs4 import BeautifulSoup
 import requests
-
+from bs4 import BeautifulSoup
 
 captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8SD_YM7uh4ZDXU8tUlk_I36a0qJnYkVZHC_Lj1DLADiUe_KpCLTIegJhCO49aSeT6jfU2v3JH7diE-DSg_ZuECRXtHt7jeJMNHqhpY9EzsAKjueU4jDq3pnBcpfb0uavhULE_gZGSjG-iv4P_YTbWsHnHGsPNzSZeykEn3ToHMy0WtwNillGrqO6U5kqll22xsS"
 
@@ -82,17 +81,19 @@ def TransactionsRaw(nol):
         data = response.find_all('span', class_='DataList')
         Date = response.find_all('div', class_='col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col')
         noTransactions = int(len(Date)/2)
-        ReturnList = []
+        Transactions = []
         for i in range(noTransactions):
-            ReturnList.append({
+            Transactions.append({
                 "NolID": nol,
-                "Error": False,
                 "Date": Date[1+i*2].text.strip(),
                 "Time": data[0+i*3].text,
                 "Type": data[1+i*3].text,
                 "Amount": data[2+i*3].text
             })
-        return ReturnList
+        return {
+            "Error": False,
+            "Transactions": Transactions
+        }
     return {
         "Error": True,
         "ErrorMsg": response.find(id='nolmsg')['value'].strip()
@@ -108,6 +109,11 @@ def NoOfTransactions(nol):
 
 class Card:
     def __init__(self, nol):
+        nol1 = ""
+        for i in str(nol):
+            if i.isdigit():
+                nol1 += i
+        nol = nol1
         if isValid(nol):
             details = Details(nol)
             self.id = details['NolID']

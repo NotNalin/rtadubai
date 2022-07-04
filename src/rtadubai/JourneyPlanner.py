@@ -1,7 +1,7 @@
-import json
-import StopFinder
 import requests
 from bs4 import BeautifulSoup
+
+import StopFinder
 
 url = 'https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7='
 
@@ -17,21 +17,19 @@ def findroute(fromstop: StopFinder.Stop, tostop: StopFinder.Stop):
     data = dict((i[0], i[1].strip()) for i in [i.text.replace('\t', '').strip().split('\r\n') for i in response.find_all('p')])
     stops = []
     for i in response.find_all('li'):
-        d = i.find_all('span', class_ = 'jp_col')
-        # print(i.prettify())
+        d = i.find_all('span', class_='jp_col')
         time = d[0].text.strip()
-        stop = d[1].find(class_ = 'jp_tmode_station').text.strip()
+        stop = d[1].find(class_='jp_tmode_station').text.strip()
         try:
-            method = d[1].find(class_ = 'icon').get('xlink:href').split('#')[-1]
-            duration = d[1].find(class_ = 'jp_duration').text.replace('min', '').strip()
+            method = d[1].find(class_='icon').get('xlink:href').split('#')[-1]
+            duration = d[1].find(class_='jp_duration').text.replace('min', '').strip()
         except:
             method = None
             duration = None
         try:
-            mode = d[1].find(class_ = 'jp_tmode').text.strip()
+            mode = d[1].find(class_='jp_tmode').text.strip()
         except:
             mode = None
-        # print(f'{time = }\n{stop = }\n{method = }\n{mode = }\n{duration = }\n')
         stops.append({
             'time': time,
             'stop': stop,
