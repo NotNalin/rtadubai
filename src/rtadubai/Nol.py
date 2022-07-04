@@ -59,20 +59,34 @@ def Details(nol):
 
 def Recent(nol, no=1):
     response = TransactionsRaw(nol)
-    if type(response) is list:
-        if no > len(response):
+    if response['Error'] is True:
+        del response['Transactions']
+        response["Transaction"] = {}
+        return response
+    else:
+        if len(response['Transactions']) == 0:
             return {
                 "Error": True,
-                "ErrorMsg": "Number given is greater than the number of transactions"
+                "ErrorMsg": "No transactions found",
+                "Transaction": {}
+            }
+        if no > len(response['Transactions']):
+            return {
+                "Error": True,
+                "ErrorMsg": "Number given is greater than the number of transactions",
+                "Transaction": {}
             }
         elif no <= 0:
             return {
                 "Error": True,
-                "ErrorMsg": "Invalid Number Given"
+                "ErrorMsg": "Invalid Number Given",
+                "Transaction": {}
             }
         else:
-            return response[no-1]
-    return response
+            return {
+                "Error": False,
+                'Transaction': response['Transactions'][no-1]
+            }
 
 
 def TransactionsRaw(nol):
@@ -96,15 +110,14 @@ def TransactionsRaw(nol):
         }
     return {
         "Error": True,
-        "ErrorMsg": response.find(id='nolmsg')['value'].strip()
+        "ErrorMsg": response.find(id='nolmsg')['value'].strip(),
+        "Transactions": []
     }
 
 
 def NoOfTransactions(nol):
     response = TransactionsRaw(nol)
-    if type(response) is list:
-        return len(response)
-    return 0
+    return len(response['Transactions'])
 
 
 class Card:
