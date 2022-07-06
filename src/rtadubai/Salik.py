@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,7 +15,7 @@ def soup(r):
     return BeautifulSoup(r.text, 'html.parser')
 
 
-def Expiry(plate):
+def expiry(plate):
     if plate[0].isalpha() and len(plate) <= 6:
         plate_code = plate[0]
         plate_no = plate[1:]
@@ -36,7 +35,7 @@ def Expiry(plate):
     return datetime.datetime.date(datetime.datetime.strptime(date.text, '%d-%B-%Y')).strftime('%d/%m/%Y')
 
 
-def Balance_Plate(plate, number, *, AreaCode=1, PlateType=1):
+def balance_plate(plate, number, *, AreaCode=1, PlateType=1):
 
     if number.startswith('+971'):
         number = number[4:]
@@ -76,7 +75,7 @@ def Balance_Plate(plate, number, *, AreaCode=1, PlateType=1):
 
 
 # Havent tested this yet
-def Balance_Account(account, pin):
+def balance_account(account, pin):
     data = {
         'salikSearchType': 'AccountAndPin',
         'salikAccountNo': account,

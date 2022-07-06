@@ -3,13 +3,14 @@ from bs4 import BeautifulSoup
 
 captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8SD_YM7uh4ZDXU8tUlk_I36a0qJnYkVZHC_Lj1DLADiUe_KpCLTIegJhCO49aSeT6jfU2v3JH7diE-DSg_ZuECRXtHt7jeJMNHqhpY9EzsAKjueU4jDq3pnBcpfb0uavhULE_gZGSjG-iv4P_YTbWsHnHGsPNzSZeykEn3ToHMy0WtwNillGrqO6U5kqll22xsS"
 
-# NOT TO BE USED IN YOUR CODE
-# Used for getting data from www.rta.ae and parsing it into a BeautifulSoup object
-# Type 1 is for getting balance and Type 2 is for getting transactions
-# Used by other functions to reduce code
-
 
 def soup(type, nol):
+
+    # NOT TO BE USED IN YOUR CODE
+    # Used for getting data from www.rta.ae and parsing it into a BeautifulSoup object
+    # Type 1 is for getting balance and Type 2 is for getting transactions
+    # Used by other functions to reduce code
+
     nol1 = ""
     for i in str(nol):
         if i.isdigit():
@@ -30,14 +31,14 @@ def soup(type, nol):
     return BeautifulSoup(requests.post(url, data=data).text, 'html.parser')
 
 
-def isValid(nol):
+def isvalid(nol):
     if soup(1, nol).find('b') is None:
         return True
     else:
         return False
 
 
-def CardBalance(nol):
+def balance(nol):
     response = soup(1, nol)
     if response.find('b') is None:
         bal = response.find('strong', class_='font-weight-bolder font-size-18')
@@ -45,7 +46,7 @@ def CardBalance(nol):
     return response.find("b").text
 
 
-def Details(nol):
+def details(nol):
     response = soup(1, nol)
     r = response.find_all('strong', class_='font-weight-bolder font-size-18')
     if len(r) != 0:
@@ -62,8 +63,8 @@ def Details(nol):
     }
 
 
-def Recent(nol, no=1):
-    response = TransactionsRaw(nol)
+def recent(nol, no=1):
+    response = transactions(nol)
     if response['Error'] is True:
         del response['Transactions']
         response["Transaction"] = {}
@@ -94,24 +95,24 @@ def Recent(nol, no=1):
             }
 
 
-def TransactionsRaw(nol):
+def transactions(nol):
     response = soup(2, nol)
     if response.find(id='nolhasErr') is None:
         data = response.find_all('span', class_='DataList')
-        Date = response.find_all('div', class_='col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col')
-        noTransactions = int(len(Date)/2)
-        Transactions = []
-        for i in range(noTransactions):
-            Transactions.append({
+        date = response.find_all('div', class_='col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col')
+        no_transactions = int(len(date)/2)
+        transactions = []
+        for i in range(no_transactions):
+            transactions.append({
                 "NolID": nol,
-                "Date": Date[1+i*2].text.strip(),
+                "Date": date[1+i*2].text.strip(),
                 "Time": data[0+i*3].text,
                 "Type": data[1+i*3].text,
                 "Amount": data[2+i*3].text
             })
         return {
             "Error": False,
-            "Transactions": Transactions
+            "Transactions": transactions
         }
     return {
         "Error": True,
@@ -120,33 +121,28 @@ def TransactionsRaw(nol):
     }
 
 
-def NoOfTransactions(nol):
-    response = TransactionsRaw(nol)
-    return len(response['Transactions'])
-
-
 class Card:
     def __init__(self, nol):
-        if isValid(nol):
-            details = Details(nol)
-            self.id = details['NolID']
-            self.balance = details['Card Balance']
-            self.pending = details['Pending Balance']
-            self.expiry = details['Expiry Date']
+        if isvalid(nol):
+            data = details(nol)
+            self.id = data['NolID']
+            self.balance = data['Card Balance']
+            self.pending = data['Pending Balance']
+            self.expiry = data['Expiry Date']
         else:
-            details = Details(nol)
+            data = details(nol)
             raise ValueError("Invalid NOL Card")
 
     def __repr__(self):
         return f'Nol Card : {self.id}'
 
     def update(self):
-        details = Details(self.id)
-        self.balance = details['Card Balance']
-        self.pending = details['Pending Balance']
+        data = details(self.id)
+        self.balance = data['Card Balance']
+        self.pending = data['Pending Balance']
 
     def transactions(self):
-        return TransactionsRaw(self.id)
+        return transactions(self.id)
 
     def recent(self, no=1):
-        return Recent(self.id, no)
+        return recent(self.id, no)
