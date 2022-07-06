@@ -41,17 +41,18 @@ def findroute(fromstop: StopFinder.Stop, tostop: StopFinder.Stop):
     data['stops'] = stops
     return data
 
-def DepartureBoard(stop : StopFinder.Stop):
+
+def DepartureBoard(stop: StopFinder.Stop):
     data = {
         'departureStopHidden': stop.id,
-        'captchaResponse' : captcha
+        'captchaResponse': captcha
     }
     r = requests.post(url + 'NJgetDepartureBoard=/', data=data)
     response = BeautifulSoup(r.text, 'html.parser')
     raw = [i.text.split('\n') for i in response.find_all('li')]
     data = []
     methodlist = [i.get('xlink:href').split('#')[-1] for i in response.find_all('use')]
-    
+
     for i in raw:
         l = []
         for j in i:
@@ -66,9 +67,9 @@ def DepartureBoard(stop : StopFinder.Stop):
             'Mode': data[i][0],
             'Type': methodlist[i],
             'Destination': data[i][1],
-            'Platform': data[i][2],
+            'Platform': data[i][2].split()[1],
             'Time': data[i][3]
-            }
+        }
         if len(data[i]) == 5:
             if data[i][4] == 'On time':
                 transport['Delay'] = None
