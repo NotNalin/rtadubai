@@ -17,7 +17,7 @@ def findstop(keyword, *, lang='en', limit=10):
             stop = {}
             stop['name'] = i['name']
             stop['coords'] = i['ref']['coords']
-            stop['id'] = i['ref']['id']
+            stop['id'] = i['stateless']
             stops.append(stop)
             limit -= 1
     return stops
