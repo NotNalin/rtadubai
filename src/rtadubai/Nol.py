@@ -10,6 +10,11 @@ captcha = "03AGdBq24OjYCEGdTLnTXbrCBkXqkRK-1CttobNTMZa-GTnJuu7PivfE1M73l2RJH2f8S
 
 
 def soup(type, nol):
+    nol1 = ""
+    for i in str(nol):
+        if i.isdigit():
+            nol1 += i
+    nol = nol1
     if type == 1:
         url = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
         data = {
@@ -122,11 +127,6 @@ def NoOfTransactions(nol):
 
 class Card:
     def __init__(self, nol):
-        nol1 = ""
-        for i in str(nol):
-            if i.isdigit():
-                nol1 += i
-        nol = nol1
         if isValid(nol):
             details = Details(nol)
             self.id = details['NolID']
