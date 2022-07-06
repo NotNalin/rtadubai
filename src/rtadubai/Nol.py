@@ -65,7 +65,7 @@ def details(nol):
 
 def recent(nol, no=1):
     response = transactions(nol)
-    if response['Error'] is True:
+    if response['Error']:
         del response['Transactions']
         response["Transaction"] = {}
         return response
