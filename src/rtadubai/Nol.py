@@ -1,9 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-import rta_captcha
-
-captcha = rta_captcha.captcha
+from . import rta_captcha
 
 
 def soup(type, nol):
@@ -12,20 +10,20 @@ def soup(type, nol):
     # Used for getting data from www.rta.ae and parsing it into a BeautifulSoup object
     # Type 1 is for getting balance and Type 2 is for getting transactions
     # Used by other functions to reduce code
-    
+
     nol = str(nol).replace(" ", "").strip()
 
     if type == 1:
         url = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
         data = {
             'nolTagId': nol,
-            'captchaResponse': captcha
+            'captchaResponse': rta_captcha.captcha
         }
     elif type == 2:
         url = "https://www.rta.ae/wps/portal/rta/ae/public-transport/nol/view-history/!ut/p/z1/jY-9DoIwAISfhQcwvZZKylhEC-VPhEbsYhiMIVF0MD6_hsEBI3LbJd-X3BFLGmL79tmd20d369vLux-sd0wUBwsEy-CJDUqTLFeVxylij-xHwK7wIbUJ8zBnEIoTO8fPt1REAWgKtw4gTVnr0tdxRN15Pn5E4r9vR8j3gwHIAa7AaSqyYg1JdVQoVjKlP8DEhwGYGFmdenK_GtOgixfScV5YvGcI/p0/IZ7_KG402B82M068F0QUK5CS641067=CZ6_KG402B82M068F0QUK5CS6410I6=NJvalidateTag=/"
         data = {
             'tagId': nol,
-            'captcha': captcha
+            'captcha': rta_captcha.captcha
         }
     return BeautifulSoup(requests.post(url, data=data).text, 'html.parser')
 

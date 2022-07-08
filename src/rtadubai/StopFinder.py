@@ -14,18 +14,18 @@ def findstop(keyword, *, lang='en', limit=10):
     if len(raw) == 1:
         raw = raw['point']
         stop = {}
+        stop['id'] = raw['stateless']
         stop['name'] = raw['name']
         stop['coords'] = raw['ref']['coords']
-        stop['id'] = raw['stateless']
         stops.append(stop)
         return stops
 
     for i in raw:
         if limit > 0:
             stop = {}
+            stop['id'] = i['stateless']
             stop['name'] = i['name']
             stop['coords'] = i['ref']['coords']
-            stop['id'] = i['stateless']
             stops.append(stop)
             limit -= 1
     return stops
@@ -39,16 +39,16 @@ class Stop:
                 if stop_id is None or coords is None:
                     stop = findstop(name)[0]
                 elif stop_id != None and coords != None:
+                    self.id = id
                     self.name = name
                     self.coords = coords
-                    self.id = id
                     raise ValueError('Not all required parameters are provided')
             else:
                 raise ValueError('Either name or stop is required')
 
+        self.id = stop['id']
         self.name = stop['name']
         self.coords = stop['coords']
-        self.id = stop['id']
 
     def __repr__(self):
         return f'Stop : {self.name}'

@@ -1,7 +1,4 @@
-import JourneyPlanner
-import Nol
-import Salik
-import StopFinder
+from . import Nol, Salik, JourneyPlanner, StopFinder
 
 from .Nol import Card
 from .StopFinder import Stop

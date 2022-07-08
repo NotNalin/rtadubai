@@ -3,9 +3,9 @@ import datetime
 import requests
 from bs4 import BeautifulSoup
 
-import rta_captcha
+from . import rta_captcha
 
-captcha = rta_captcha.captcha
+
 url = 'https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7'
 
 dubai_code = {'A': 11, 'B': 12, 'C': 13, 'D': 14, 'E': 15, 'F': 16, 'G': 17, 'H': 18, 'I': 19, 'J': 20, 'K': 21, 'L': 22, 'M': 23,
@@ -28,7 +28,7 @@ def expiry(plate):
     data = {
         'plateCode': plate_code.upper(),
         'plateNo': plate_no,
-        'captchaResponse': captcha
+        'captchaResponse': rta_captcha.captcha
     }
     response = soup(requests.post(url+'=NJgetVehicleDetails=/', data=data))
     date = response.find('strong', class_='font-weight-bolder font-size-18')
@@ -82,7 +82,7 @@ def balance_account(account, pin):
         'salikSearchType': 'AccountAndPin',
         'salikAccountNo': account,
         'salikPin': pin,
-        'captchaResponse': captcha
+        'captchaResponse': rta_captcha.captcha
     }
     response = soup(requests.post(url+'=NJgetSalikBalance=/', data=data))
     balance = response.find('strong', class_='font-weight-bolder font-size-18')
