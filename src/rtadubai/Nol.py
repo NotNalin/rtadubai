@@ -84,10 +84,7 @@ def transactions(nol):
     response = soup(2, nol)
     if response.find(id="nolhasErr") is None:
         data = response.find_all("span", class_="DataList")
-        date = response.find_all(
-            "div",
-            class_="col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col",
-        )
+        date = response.find_all("div", class_="col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col")
         no_transactions = int(len(date) / 2)
         transactions = []
         for i in range(no_transactions):

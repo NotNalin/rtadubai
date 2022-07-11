@@ -20,13 +20,7 @@ def findroute(fromstop: StopFinder.Stop, tostop: StopFinder.Stop):
     if error is not None:
         raise ValueError(error.text)
 
-    data = dict(
-        (i[0], i[1].strip())
-        for i in [
-            i.text.replace("\t", "").strip().split("\r\n")
-            for i in response.find_all("p")
-        ]
-    )
+    data = dict((i[0], i[1].strip()) for i in [i.text.replace("\t", "").strip().split("\r\n") for i in response.find_all("p")])
 
     stops = []
     for i in response.find_all("li"):
