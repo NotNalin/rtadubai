@@ -64,12 +64,13 @@ def balance_plate(plate, number, *, AreaCode=1, PlateType=1):
         "PlateCountry": "AE",
         "MobileCountryCode": "971",
         "MobileNumber": number,
+        "language": "en"
     }
     response = requests.post("https://www.salik.rta.ae/surface/financial/balanceenquiry", data=data).json()
     if response["Valid"]:
         return response["SalikCredit"]
     else:
-        return response["BusinessErrorMessage"]
+        return response['response']
 
 
 # Havent tested this yet
