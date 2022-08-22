@@ -32,5 +32,3 @@ class Stop:
     def __repr__(self):
         return f"Stop: {self.name}"
 
-
-print(Stop("Al Ghubaiba").__dict__)
