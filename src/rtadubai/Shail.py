@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import requests
+import json
 from bs4 import BeautifulSoup
 
 URL = "https://www.rta.ae/wps/portal/rta/ae/public-transport/journeyplanner/!ut/p/z1/jY5BC8IgGIZ_kp_Oph2Vhc62uZGjzUt4iCGUdYh-fyF0bPXeXngeeJBHE_IpPOMSHvGWwuX9Z1-e9ooCkZy0vOQVCFY7vqkUtoyhYwa6HnMtATdQOAliHJwZtqbWuED-Hx--TMBv32ekA6AKKG54a3cgsNFWkYEoQz_ASmIGVhoO54Tu13GC2C8vMVd2Ng!!/p0/IZ7_KG402B82M868D0A7IT85DG1OF6=CZ6_KG402B82M868D0A7IT85DG1O77="
@@ -119,7 +120,13 @@ def journey_planner(
     soup = BeautifulSoup(response.text, "html.parser")
     raw = soup.find(class_="jp_container_results")
     jps = raw.find_all(class_="jp_container_result")
+    journeys = []
     for i in jps:
+        times = []
+        stops = []
+        methods = []
+        modes = []
+        durations = []
         for j in i.find_all("li"):
             time_ = j.find(class_="jp_row").b.text.strip()
             stop = j.find(class_="jp_tmode_station").text.strip()
@@ -138,9 +145,37 @@ def journey_planner(
                 duration = j.find(class_="jp_duration").text.strip()
             except AttributeError:
                 duration = None
-            print(f"{time_ = }, {stop = }, {method = }, {mode = }, {duration = }")
-        
-        print("\n----------\n")
+            times.append(time_)
+            stops.append(stop)
+            if method:
+                methods.append(method)
+            if mode:
+                modes.append(mode)
+            if duration:
+                durations.append(duration)
+        starttime = times.pop(0)
+        startstop = stops.pop(0)
+        d = i.find(class_="jp_more_info").find_all("b")
+        duration, amount, starttime, endtime = [k.text.strip() for k in d]
+        jp = []
+        for j in range(len(times)):
+            jp.append({
+                "time": times[j],
+                "stop": stops[j],
+                "method": methods[j],
+                "mode": modes[j],
+                "duration": durations[j],
+            })
+        journeys.append({
+            "starttime": starttime,
+            "endtime": endtime,
+            "startstop": startstop,
+            "duration": duration,
+            "amount": amount,
+            "journeys": jp
+        })
+    return journeys
 
 
-journey_planner(Stop("Rashidiya bus station"), Stop("Al gubhaibha bus station"))
+# a = journey_planner(Stop("Rashidiya bus station"), Stop("Al gubhaibha bus station"))
+# print(json.dumps(a[0], indent=4))
