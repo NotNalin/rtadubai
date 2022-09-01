@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 import requests
-import json
 from bs4 import BeautifulSoup
 
 URL = "https://www.rta.ae/wps/portal/rta/ae/public-transport/journeyplanner/!ut/p/z1/jY5BC8IgGIZ_kp_Oph2Vhc62uZGjzUt4iCGUdYh-fyF0bPXeXngeeJBHE_IpPOMSHvGWwuX9Z1-e9ooCkZy0vOQVCFY7vqkUtoyhYwa6HnMtATdQOAliHJwZtqbWuED-Hx--TMBv32ekA6AKKG54a3cgsNFWkYEoQz_ASmIGVhoO54Tu13GC2C8vMVd2Ng!!/p0/IZ7_KG402B82M868D0A7IT85DG1OF6=CZ6_KG402B82M868D0A7IT85DG1O77="
@@ -29,7 +28,7 @@ def findstop(keyword):
 
 
 class Stop:
-    def __init__(self, name, *, stop=None):
+    def __init__(self, name=None, *, stop=None):
 
         if stop is None:
             stop = findstop(name)[0]
@@ -77,7 +76,7 @@ def journey_planner(
     tostop: Stop,
     time=datetime.now(timezone(timedelta(hours=4))),
     *,
-    depart_or_arrive="D",
+    depart=True,
     metro=True,
     bus=True,
     tram=True,
@@ -85,8 +84,13 @@ def journey_planner(
     avoidchanges=False,
 ):
 
-    if depart_or_arrive not in ["D", "A"]:
-        raise ValueError("depart_or_arrive must be either D or A")
+    if not isinstance(time, datetime):
+        raise ValueError("time must be a datetime object")
+
+    if depart:
+        depart_or_arrive = "D"
+    else:
+        depart_or_arrive = "A"
     
 
     data = {
@@ -157,6 +161,7 @@ def journey_planner(
         startstop = stops.pop(0)
         d = i.find(class_="jp_more_info").find_all("b")
         duration, amount, starttime, endtime = [k.text.strip() for k in d]
+        mapcoords = i.find(id=lambda x : x and x.startswith("pathCoords")).get("value")
         jp = []
         for j in range(len(times)):
             jp.append({
@@ -172,10 +177,7 @@ def journey_planner(
             "startstop": startstop,
             "duration": duration,
             "amount": amount,
-            "journeys": jp
+            "journeys": jp,
+            "mapcoords": mapcoords,
         })
     return journeys
-
-
-# a = journey_planner(Stop("Rashidiya bus station"), Stop("Al gubhaibha bus station"))
-# print(json.dumps(a[0], indent=4))
