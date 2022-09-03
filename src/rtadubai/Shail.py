@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from http import cookies
 import requests
 from bs4 import BeautifulSoup
 
@@ -9,7 +10,10 @@ def findstop(keyword):
     data = {
         "KeyedValue": keyword
     }
-    response = requests.post(URL + "NJstopfinderShail=/", data=data).json()
+    cookies = {
+        "com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en"
+    }
+    response = requests.post(URL + "NJstopfinderShail=/", data=data, cookies=cookies).json()
     raw = response["stopLocationOrCoordLocation"]
     stops = []
     for i in raw:
