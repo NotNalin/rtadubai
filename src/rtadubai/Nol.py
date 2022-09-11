@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from . import rta_captcha
+import rtadubai.rta_captcha as rta_captcha
 
 
 def soup(type, nol):
