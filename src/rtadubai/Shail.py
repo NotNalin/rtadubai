@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from http import cookies
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,7 +12,11 @@ def findstop(keyword):
     cookies = {
         "com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en"
     }
-    response = requests.post(URL + "NJstopfinderShail=/", data=data, cookies=cookies).json()
+    response = requests.post(URL + "NJstopfinderShail=/", data=data, cookies=cookies)
+    try:
+        response = response.json()
+    except:
+        return []
     raw = response["stopLocationOrCoordLocation"]
     stops = []
     for i in raw:
@@ -31,11 +34,22 @@ def findstop(keyword):
     return stops
 
 
-class Stop:
-    def __init__(self, name=None, *, stop=None):
+def stopnames(keyword):
+    stops = findstop(keyword)
+    if len(stops) == 0:
+        return []
+    return [i["name"] for i in stops]
 
-        if stop is None:
-            stop = findstop(name)[0]
+
+class Stop:
+    def __init__(self, name=None):
+
+        stops = findstop(name)
+        if len(stops) == 0:
+            raise ValueError("Stop not found")
+        else:
+            stop = stops[0]
+
         self.name = stop["name"]
         self.id = stop["id"]
         self.coords = stop["coords"]
@@ -75,18 +89,11 @@ def departures(stop: Stop):
     return transports
 
 
-def journey_planner(
-    fromstop: Stop,
-    tostop: Stop,
-    time=datetime.now(timezone(timedelta(hours=4))),
-    *,
-    depart=True,
-    metro=True,
-    bus=True,
-    tram=True,
-    waterbus=True,
-    avoidchanges=False,
-):
+def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(timedelta(hours=4))), *,
+                    depart=True, metro=True, bus=True, tram=True, waterbus=True, avoidchanges=False):
+
+    if not isinstance(fromstop, Stop) or not isinstance(tostop, Stop):
+        raise TypeError("fromstop and tostop must be Stop objects")
 
     if not isinstance(time, datetime):
         raise ValueError("time must be a datetime object")
@@ -95,7 +102,6 @@ def journey_planner(
         depart_or_arrive = "D"
     else:
         depart_or_arrive = "A"
-    
 
     data = {
         "origin": fromstop.name,
@@ -165,7 +171,6 @@ def journey_planner(
         startstop = stops.pop(0)
         d = i.find(class_="jp_more_info").find_all("b")
         duration, amount, starttime, endtime = [k.text.strip() for k in d]
-        mapcoords = i.find(id=lambda x : x and x.startswith("pathCoords")).get("value")
         jp = []
         for j in range(len(times)):
             jp.append({
@@ -182,6 +187,5 @@ def journey_planner(
             "duration": duration,
             "amount": amount,
             "journeys": jp,
-            "mapcoords": mapcoords,
         })
     return journeys
