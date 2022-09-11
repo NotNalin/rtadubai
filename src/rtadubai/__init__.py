@@ -1,6 +1,6 @@
-from . import Nol, Salik, JourneyPlanner, StopFinder, Shail
+from . import Nol, Salik, JourneyPlanner, Shail
 
-from .Nol import Card
-from .Shail import Stop
+from rtadubai.Nol import Card
+from rtadubai.Shail import Stop
 
-__all__ = ["Nol", "Salik", "JourneyPlanner", "StopFinder", "Shail"]
+__all__ = ["Nol", "Salik", "JourneyPlanner", "Shail"]
