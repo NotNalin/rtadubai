@@ -23,7 +23,7 @@ ABUDHABI_CODE = {
 
 SHARJAH_CODE = {
     '0': 5, '1': 25, '2': 26, '3': 83,
-    'white': 5, 'orange': 6, 'brown': 24, '': 5
+    'WHITE': 5, 'ORANGE': 6, 'BROWN': 24, '': 5
 }
 
 AJMAN_CODE = {
@@ -135,7 +135,7 @@ def balance_account(account, pin):
     return balance.text[:-2]
 
 
-def balance(code, number, mobile_number, *, AreaCode=1):
+def balance(code, number, mobile_number, *, area=1):
     mobile_number = str(mobile_number)
     if mobile_number.startswith("+971"):
         mobile_number = mobile_number[4:]
@@ -149,17 +149,17 @@ def balance(code, number, mobile_number, *, AreaCode=1):
     if not mobile_number.startswith("5") or len(mobile_number) != 9:
         raise ValueError("Invalid mobile number")
 
-    if AreaCode not in AREA_CODES:
+    if area not in AREA_CODES:
         raise ValueError("Invalid area code")
-    
-    area = AREA_CODES[AreaCode]
+
+    area = AREA_CODES[area]
     if not code.upper() in area:
         raise ValueError("Invalid plate code")
     else:
         code = area[code.upper()]
-    
+
     data = {
-        "PlateSourceId": AreaCode,
+        "PlateSourceId": area,
         "PlateCategoryId": 1,
         "PlateColorId": code,
         "PlateNumber": number,
