@@ -96,29 +96,23 @@ def balance_plate(plate, number):
     elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
         plate_code = plate[0:2]
         plate_no = plate[2:]
-
+        
     if plate_code.upper() in DUBAI_CODE:
         plate_code = DUBAI_CODE[plate_code.upper()]
 
     data = {
-        "PlateSourceId": 1,
-        "PlateCategoryId": 1,
-        "PlateColorId": plate_code,
-        "PlateNumber": plate_no,
-        "PlateCountry": "AE",
-        "MobileCountryCode": "971",
-        "MobileNumber": number,
-        "language": "en"
+        'salikSearchType': 'MobileAndPlate',
+        'salikPlateCode': plate_code,
+        'salikPlateNo': plate_no,
+        'salikMobileCountryCode': '971',
+        'salikMobileNo': number,
+        'captchaResponse': rta_captcha.CAPTCHA
     }
-    response = requests.post("https://www.salik.ae/surface/financial/balanceenquiry", data=data).json()
-    if response["Valid"]:
-        return response["SalikCredit"]
-    else:
-        try:
-            raise ValueError(response['BusinessErrorMessage'])
-        except KeyError:
-            raise ValueError("Unknown error occurred\n Plase make an issue on https://github.com/NotNalin/rtadubai/issues")
-
+    response = soup(requests.post(URL+'=NJgetSalikBalance=/', data=data))
+    balance = response.find('strong', class_='font-weight-bolder font-size-18')
+    if balance is None:
+        raise response.find('b').text
+    return balance.text[:-2]
 
 # Havent tested this yet
 def balance_account(account, pin):
@@ -131,7 +125,7 @@ def balance_account(account, pin):
     response = soup(requests.post(URL + "=NJgetSalikBalance=/", data=data))
     balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
-        return response.find("b").text
+        raise response.find("b").text
     return balance.text[:-2]
 
 
