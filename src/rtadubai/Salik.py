@@ -96,7 +96,7 @@ def balance_plate(plate, number):
     elif plate[0].isalpha() and plate[1].isalpha() and len(plate) <= 7:
         plate_code = plate[0:2]
         plate_no = plate[2:]
-        
+
     if plate_code.upper() in DUBAI_CODE:
         plate_code = DUBAI_CODE[plate_code.upper()]
 
@@ -111,21 +111,21 @@ def balance_plate(plate, number):
     response = soup(requests.post(URL+'=NJgetSalikBalance=/', data=data))
     balance = response.find('strong', class_='font-weight-bolder font-size-18')
     if balance is None:
-        raise response.find('b').text
+        ValueError(response.find('b').text)
     return balance.text[:-2]
 
-# Havent tested this yet
+
 def balance_account(account, pin):
     data = {
         "salikSearchType": "AccountAndPin",
         "salikAccountNo": account,
-        "salikPin": pin,
+        "salikPinNo": pin,
         "captchaResponse": rta_captcha.CAPTCHA,
     }
     response = soup(requests.post(URL + "=NJgetSalikBalance=/", data=data))
     balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
-        raise response.find("b").text
+        ValueError(response.find("b").text)
     return balance.text[:-2]
 
 
