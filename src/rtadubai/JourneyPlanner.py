@@ -6,7 +6,6 @@ import rtadubai.rta_captcha as rta_captcha
 URL = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7="
 
 
-
 def findstop(keyword, *, lang="en", limit=10):
     data = {
         "KeyedValue": keyword,
@@ -36,6 +35,13 @@ def findstop(keyword, *, lang="en", limit=10):
     return stops
 
 
+def stopnames(keyword):
+    stops = findstop(keyword)
+    if len(stops) == 0:
+        return []
+    return [i["name"] for i in stops]
+
+
 class Stop:
     def __init__(self, name=None, coords=None, stop_id=None, *, stop: findstop = None):
         if stop is None:
@@ -56,7 +62,6 @@ class Stop:
 
     def __repr__(self):
         return f"Stop : {self.name}"
-
 
 
 def findroute(fromstop: Stop, tostop: Stop):
