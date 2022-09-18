@@ -3,34 +3,24 @@ from bs4 import BeautifulSoup
 
 import rtadubai.rta_captcha as rta_captcha
 
-
-def soup(type, nol):
-
-    # NOT TO BE USED IN YOUR CODE
-    # Used for getting data from www.rta.ae and parsing it into a BeautifulSoup object
-    # Type 1 is for getting balance and Type 2 is for getting transactions
-    # Used by other functions to reduce code
-
-    nol = str(nol).replace(" ", "").strip()
-
-    if type == 1:
-        URL = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
-        data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
-    elif type == 2:
-        URL = "https://www.rta.ae/wps/portal/rta/ae/public-transport/nol/view-history/!ut/p/z1/jY-9DoIwAISfhQcwvZZKylhEC-VPhEbsYhiMIVF0MD6_hsEBI3LbJd-X3BFLGmL79tmd20d369vLux-sd0wUBwsEy-CJDUqTLFeVxylij-xHwK7wIbUJ8zBnEIoTO8fPt1REAWgKtw4gTVnr0tdxRN15Pn5E4r9vR8j3gwHIAa7AaSqyYg1JdVQoVjKlP8DEhwGYGFmdenK_GtOgixfScV5YvGcI/p0/IZ7_KG402B82M068F0QUK5CS641067=CZ6_KG402B82M068F0QUK5CS6410I6=NJvalidateTag=/"
-        data = {"tagId": nol, "captcha": rta_captcha.CAPTCHA}
-    return BeautifulSoup(requests.post(URL, data=data).text, "html.parser")
+URL_DETAILS = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
+URL_TRANSACTIONS = "https://www.rta.ae/wps/portal/rta/ae/public-transport/nol/view-history/!ut/p/z1/jY-9DoIwAISfhQcwvZZKylhEC-VPhEbsYhiMIVF0MD6_hsEBI3LbJd-X3BFLGmL79tmd20d369vLux-sd0wUBwsEy-CJDUqTLFeVxylij-xHwK7wIbUJ8zBnEIoTO8fPt1REAWgKtw4gTVnr0tdxRN15Pn5E4r9vR8j3gwHIAa7AaSqyYg1JdVQoVjKlP8DEhwGYGFmdenK_GtOgixfScV5YvGcI/p0/IZ7_KG402B82M068F0QUK5CS641067=CZ6_KG402B82M068F0QUK5CS6410I6=NJvalidateTag=/"
 
 
 def isvalid(nol):
-    if soup(1, nol).find("b") is None:
+    nol = str(nol).replace(" ", "").strip()
+    data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
+    if response.find("b") is None:
         return True
     else:
         return False
 
 
 def balance(nol):
-    response = soup(1, nol)
+    nol = str(nol).replace(" ", "").strip()
+    data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
     if response.find("b") is None:
         bal = response.find("strong", class_="font-weight-bolder font-size-18")
         return bal.text
@@ -38,7 +28,9 @@ def balance(nol):
 
 
 def details(nol):
-    response = soup(1, nol)
+    nol = str(nol).replace(" ", "").strip()
+    data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
     r = response.find_all("strong", class_="font-weight-bolder font-size-18")
     if len(r) != 0:
         return {
@@ -81,7 +73,10 @@ def recent(nol, no=1):
 
 
 def transactions(nol):
-    response = soup(2, nol)
+    nol = str(nol).replace(" ", "").strip()
+    data = {"tagId": nol, "captcha": rta_captcha.CAPTCHA}
+    response = BeautifulSoup(requests.post(URL_TRANSACTIONS, data=data).text, "html.parser")
+
     if response.find(id="nolhasErr") is None:
         data = response.find_all("span", class_="DataList")
         date = response.find_all("div", class_="col col-lg-5 col-sm-5 col-md-5 vcenter col-xs-8 ss-table__col")
