@@ -33,7 +33,6 @@ AJMAN_CODE = {
 UAQ_CODE = {
     'A': 11, 'B': 12, 'C': 13, 'D': 14, 'E': 15, 'F': 16, 'G': 17, 'H': 18, 'I': 19, 'J': 20, 'K': 21, 'L': 22, 'M': 23,
     'X': 73, 'WHITE': 5
-
 }
 
 RAK_CODE = {
@@ -58,10 +57,6 @@ AREA_CODES = {
 }
 
 
-def soup(r):
-    return BeautifulSoup(r.text, "html.parser")
-
-
 def expiry(plate):
     if plate[0].isalpha() and len(plate) <= 6:
         plate_code = plate[0]
@@ -71,10 +66,11 @@ def expiry(plate):
         plate_no = plate[2:]
 
     data = {"plateCode": plate_code.upper(), "plateNo": plate_no, "captchaResponse": rta_captcha.CAPTCHA}
-    response = soup(requests.post(URL + "=NJgetVehicleDetails=/", data=data))
+    r = requests.post(URL + "=NJgetVehicleDetails=/", data=data)
+    response = BeautifulSoup(r.text, "html.parser")
     date = response.find("strong", class_="font-weight-bolder font-size-18")
     if date is None:
-        return response.find("b").text
+        raise ValueError(response.find("b").text)
     return datetime.datetime.date(datetime.datetime.strptime(date.text, "%d-%B-%Y")).strftime("%d/%m/%Y")
 
 
@@ -106,10 +102,11 @@ def balance_plate(plate, number):
         'salikMobileNo': number,
         'captchaResponse': rta_captcha.CAPTCHA
     }
-    response = soup(requests.post(URL+'=NJgetSalikBalance=/', data=data))
+    r = requests.post(URL + "=NJgetSalikBalance=/", data=data)
+    response = BeautifulSoup(r.text, "html.parser")
     balance = response.find('strong', class_='font-weight-bolder font-size-18')
     if balance is None:
-        ValueError(response.find('b').text)
+        raise ValueError(response.find('b').text)
     return balance.text[:-2]
 
 
@@ -120,10 +117,11 @@ def balance_account(account, pin):
         "salikPinNo": pin,
         "captchaResponse": rta_captcha.CAPTCHA,
     }
-    response = soup(requests.post(URL + "=NJgetSalikBalance=/", data=data))
+    r = requests.post(URL + "=NJgetSalikBalance=/", data=data)
+    response = BeautifulSoup(r.text, "html.parser")
     balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
-        ValueError(response.find("b").text)
+        raise ValueError(response.find("b").text)
     return balance.text[:-2]
 
 
