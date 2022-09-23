@@ -176,10 +176,14 @@ def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(tim
         for j in range(len(times)):
             if j == 0:
                 from_ = startstop
+                start = starttime
             else:
                 from_ = stops[j - 1]
+                start = times[j - 1]
+
             jp.append({
-                "time": times[j],
+                "starttime": start,
+                "endtime": times[j],
                 "from": from_,
                 "to": stops[j],
                 "method": methods[j],
