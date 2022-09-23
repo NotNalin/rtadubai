@@ -174,9 +174,14 @@ def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(tim
         duration, amount, starttime, endtime = [k.text.strip() for k in d]
         jp = []
         for j in range(len(times)):
+            if j == 0:
+                from_ = startstop
+            else:
+                from_ = stops[j - 1]
             jp.append({
                 "time": times[j],
-                "stop": stops[j],
+                "from": from_,
+                "to": stops[j],
                 "method": methods[j],
                 "mode": modes[j],
                 "duration": durations[j],
@@ -185,6 +190,7 @@ def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(tim
             "starttime": starttime,
             "endtime": endtime,
             "startstop": startstop,
+            "endstop": stops[-1],
             "duration": duration,
             "amount": amount,
             "journeys": jp,
