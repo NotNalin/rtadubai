@@ -60,6 +60,8 @@ class Stop:
 
 
 def departures(stop: Stop):
+    if not isinstance(stop, Stop):
+        raise TypeError("stop must be a rtadubai.Stop object")
     data = {
         "departureLine": stop.name,
         "departureStateless": stop.id,
@@ -70,8 +72,14 @@ def departures(stop: Stop):
 
     d = soup.find(class_="jp_departure_result")
     if d is None:
-        if soup.find(class_="errorTxt") is not None:
-            raise ValueError(soup.find(class_="errorTxt").text)
+        error = soup.find(class_="errorTxt")
+        if error is not None:
+            if "No serving lines found" in error.text:
+                return []
+            else:
+                raise ValueError(soup.find(class_="errorTxt").text)
+        else:
+            raise ValueError("Unknown error occurred\n Plase make an issue on https://github.com/NotNalin/rtadubai/issues")
 
     d = d.find_all("div", class_="jp_departure_item")
     transports = []
@@ -94,10 +102,13 @@ def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(tim
                     depart=True, metro=True, bus=True, tram=True, waterbus=True, avoidchanges=False):
 
     if not isinstance(fromstop, Stop) or not isinstance(tostop, Stop):
-        raise TypeError("fromstop and tostop must be Stop objects")
+        raise TypeError("fromstop and tostop must be rtadubai.Stop objects")
 
     if not isinstance(time, datetime):
-        raise ValueError("time must be a datetime object")
+        raise TypeError("time must be a datetime object")
+
+    if not isinstance(depart, bool) or not isinstance(metro, bool) or not isinstance(bus, bool) or not isinstance(tram, bool) or not isinstance(waterbus, bool) or not isinstance(avoidchanges, bool):
+        raise TypeError("depart, metro, bus, tram, waterbus and avoidchanges must be a boolean value")
 
     if depart:
         depart_or_arrive = "D"
