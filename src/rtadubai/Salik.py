@@ -95,18 +95,18 @@ def balance_plate(plate, number):
         plate_code = DUBAI_CODE[plate_code.upper()]
 
     data = {
-        'salikSearchType': 'MobileAndPlate',
-        'salikPlateCode': plate_code,
-        'salikPlateNo': plate_no,
-        'salikMobileCountryCode': '971',
-        'salikMobileNo': number,
-        'captchaResponse': rta_captcha.CAPTCHA
+        "salikSearchType": "MobileAndPlate",
+        "salikPlateCode": plate_code,
+        "salikPlateNo": plate_no,
+        "salikMobileCountryCode": "971",
+        "salikMobileNo": number,
+        "captchaResponse": rta_captcha.CAPTCHA,
     }
     r = requests.post(URL + "=NJgetSalikBalance=/", data=data)
     response = BeautifulSoup(r.text, "html.parser")
-    balance = response.find('strong', class_='font-weight-bolder font-size-18')
+    balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
-        raise ValueError(response.find('b').text)
+        raise ValueError(response.find("b").text)
     return balance.text[:-2]
 
 
@@ -155,13 +155,13 @@ def balance(code, number, mobile_number, *, area=1):
         "PlateCountry": "AE",
         "MobileCountryCode": "971",
         "MobileNumber": mobile_number,
-        "language": "en"
+        "language": "en",
     }
     response = requests.post("https://www.salik.ae/surface/financial/balanceenquiry", data=data).json()
     if response["Valid"]:
         return response["SalikCredit"]
     else:
         try:
-            raise ValueError(response['BusinessErrorMessage'])
+            raise ValueError(response["BusinessErrorMessage"])
         except KeyError:
             raise ValueError("Unknown error occurred\n Plase make an issue on https://github.com/NotNalin/rtadubai/issues")

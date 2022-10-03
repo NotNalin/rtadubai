@@ -7,12 +7,8 @@ URL = "https://www.rta.ae/wps/portal/rta/ae/public-transport/journeyplanner/!ut/
 
 
 def findstop(keyword):
-    data = {
-        "KeyedValue": keyword
-    }
-    cookies = {
-        "com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en"
-    }
+    data = {"KeyedValue": keyword}
+    cookies = {"com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en"}
     response = requests.post(URL + "NJstopfinderShail=/", data=data, cookies=cookies)
     try:
         response = response.json()
@@ -98,8 +94,18 @@ def departures(stop: Stop):
     return transports
 
 
-def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(timedelta(hours=4))), *,
-                    depart=True, metro=True, bus=True, tram=True, waterbus=True, avoidchanges=False):
+def journey_planner(
+    fromstop: Stop,
+    tostop: Stop,
+    time=datetime.now(timezone(timedelta(hours=4))),
+    *,
+    depart=True,
+    metro=True,
+    bus=True,
+    tram=True,
+    waterbus=True,
+    avoidchanges=False,
+):
 
     if not isinstance(fromstop, Stop) or not isinstance(tostop, Stop):
         raise TypeError("fromstop and tostop must be rtadubai.Stop objects")
@@ -192,22 +198,26 @@ def journey_planner(fromstop: Stop, tostop: Stop, time=datetime.now(timezone(tim
                 from_ = stops[j - 1]
                 start = times[j - 1]
 
-            jp.append({
-                "starttime": start,
-                "endtime": times[j],
-                "from": from_,
-                "to": stops[j],
-                "method": methods[j],
-                "mode": modes[j],
-                "duration": durations[j],
-            })
-        journeys.append({
-            "starttime": starttime,
-            "endtime": endtime,
-            "startstop": startstop,
-            "endstop": stops[-1],
-            "duration": duration,
-            "amount": amount,
-            "journeys": jp,
-        })
+            jp.append(
+                {
+                    "starttime": start,
+                    "endtime": times[j],
+                    "from": from_,
+                    "to": stops[j],
+                    "method": methods[j],
+                    "mode": modes[j],
+                    "duration": durations[j],
+                }
+            )
+        journeys.append(
+            {
+                "starttime": starttime,
+                "endtime": endtime,
+                "startstop": startstop,
+                "endstop": stops[-1],
+                "duration": duration,
+                "amount": amount,
+                "journeys": jp,
+            }
+        )
     return journeys
