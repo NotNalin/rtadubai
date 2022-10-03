@@ -24,7 +24,7 @@ def balance(nol):
     if response.find("b") is None:
         bal = response.find("strong", class_="font-weight-bolder font-size-18")
         return bal.text
-    return response.find("b").text
+    raise ValueError(response.find("b").text)
 
 
 def details(nol):
@@ -34,42 +34,24 @@ def details(nol):
     r = response.find_all("strong", class_="font-weight-bolder font-size-18")
     if len(r) != 0:
         return {
-            "NolID": nol,
-            "Error": False,
-            "Card Balance": r[0].text,
-            "Pending Balance": r[1].text,
-            "Expiry Date": r[2].text,
+            "id": nol,
+            "balance": r[0].text,
+            "pending": r[1].text,
+            "expiry": r[2].text,
         }
-    return {"Error": True, "ErrorMsg": response.find("b").text}
+    raise ValueError(response.find("b").text)
 
 
 def recent(nol, no=1):
     response = transactions(nol)
-    if response["Error"]:
-        del response["Transactions"]
-        response["Transaction"] = {}
-        return response
+    if len(response) == 0:
+        raise ValueError("No transactions found")
+    elif no > len(response):
+        raise ValueError("Number given is greater than the number of transactions")
+    elif no <= 0:
+        raise ValueError("Invalid Number Given")
     else:
-        if len(response["Transactions"]) == 0:
-            return {
-                "Error": True,
-                "ErrorMsg": "No transactions found",
-                "Transaction": {},
-            }
-        if no > len(response["Transactions"]):
-            return {
-                "Error": True,
-                "ErrorMsg": "Number given is greater than the number of transactions",
-                "Transaction": {},
-            }
-        elif no <= 0:
-            return {
-                "Error": True,
-                "ErrorMsg": "Invalid Number Given",
-                "Transaction": {},
-            }
-        else:
-            return {"Error": False, "Transaction": response["Transactions"][no - 1]}
+        return response[no - 1]
 
 
 def transactions(nol):
@@ -85,40 +67,40 @@ def transactions(nol):
         for i in range(no_transactions):
             transactions.append(
                 {
-                    "NolID": nol,
-                    "Date": date[1 + i * 2].text.strip(),
-                    "Time": data[0 + i * 3].text,
-                    "Type": data[1 + i * 3].text,
-                    "Amount": data[2 + i * 3].text,
+                    "id": nol,
+                    "date": date[1 + i * 2].text.strip(),
+                    "time": data[0 + i * 3].text,
+                    "type": data[1 + i * 3].text,
+                    "amount": data[2 + i * 3].text,
                 }
             )
-        return {"Error": False, "Transactions": transactions}
-    return {
-        "Error": True,
-        "ErrorMsg": response.find(id="nolmsg")["value"].strip(),
-        "Transactions": [],
-    }
+        return transactions
+
+    error = response.find(id="nolmsg")["value"].strip()
+    if error == "No transaction found":
+        return []
+    else:
+        raise ValueError(error)
 
 
 class Card:
     def __init__(self, nol):
         if isvalid(nol):
             data = details(nol)
-            self.id = data["NolID"]
-            self.balance = data["Card Balance"]
-            self.pending = data["Pending Balance"]
-            self.expiry = data["Expiry Date"]
+            self.id = data["id"]
+            self.balance = data["balance"]
+            self.pending = data["pending"]
+            self.expiry = data["expiry"]
         else:
-            data = details(nol)
-            raise ValueError("Invalid NOL Card")
+            raise ValueError("Invalid Nol Card")
 
     def __repr__(self):
         return f"Nol Card : {self.id}"
 
     def update(self):
         data = details(self.id)
-        self.balance = data["Card Balance"]
-        self.pending = data["Pending Balance"]
+        self.balance = data["balance"]
+        self.pending = data["pending"]
 
     def transactions(self):
         return transactions(self.id)
