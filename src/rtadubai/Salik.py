@@ -164,7 +164,7 @@ def balance(code, number, mobile_number, *, area=1):
     if not mobile_number.startswith("5") or len(mobile_number) != 9:
         raise ValueError("Invalid mobile number")
 
-    if area not in AREA_CODES:
+    if int(area) not in AREA_CODES:
         raise ValueError("Invalid area code")
 
     if not code.upper() in AREA_CODES[area]:
