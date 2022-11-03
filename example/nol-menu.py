@@ -23,27 +23,31 @@ while True:
         print()
 
     elif choice == 2:
-        transaction = card.recent()
-        if transaction["Error"] is True:
-            print("No transactions found")
-        else:
-            transaction = transaction["Transaction"]
-            print("Date:\t\t" + transaction["Date"])
-            print("Time:\t\t" + transaction["Time"])
-            print("Type:\t\t" + transaction["Type"])
-            print("Amount:\t" + transaction["Amount"] + " AED")
-            print()
+        try:
+            transaction = card.recent()
+        except ValueError as e:
+            print(e)
+            pass
+        print("Date:\t\t" + transaction["date"])
+        print("Time:\t\t" + transaction["time"])
+        print("Type:\t\t" + transaction["type"])
+        print("Amount:\t" + transaction["amount"] + " AED")
+        print()
 
     elif choice == 3:
-        transactions = card.transactions()
-        if transactions["Error"] is True:
-            print("No transactions found")
+        try:
+            transactions = card.transactions()
+        except ValueError as e:
+            print(e)
+            pass
+        if len(transactions) == 0:
+            print("No Transactions Found")
         else:
-            for transaction in transactions["Transactions"]:
-                print("Date:\t\t" + transaction["Date"])
-                print("Time:\t\t" + transaction["Time"])
-                print("Type:\t\t" + transaction["Type"])
-                print("Amount:\t" + transaction["Amount"] + " AED")
+            for transaction in transactions:
+                print("Date:\t\t" + transaction["date"])
+                print("Time:\t\t" + transaction["time"])
+                print("Type:\t\t" + transaction["type"])
+                print("Amount:\t" + transaction["amount"] + " AED")
                 print()
     elif choice == 0:
         break
