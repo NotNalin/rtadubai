@@ -25,13 +25,13 @@ while True:
     elif choice == 2:
         try:
             transaction = card.recent()
+            print("Date:\t\t" + transaction["date"])
+            print("Time:\t\t" + transaction["time"])
+            print("Type:\t\t" + transaction["type"])
+            print("Amount:\t" + transaction["amount"] + " AED")
         except ValueError as e:
             print(e)
             pass
-        print("Date:\t\t" + transaction["date"])
-        print("Time:\t\t" + transaction["time"])
-        print("Type:\t\t" + transaction["type"])
-        print("Amount:\t" + transaction["amount"] + " AED")
         print()
 
     elif choice == 3:
