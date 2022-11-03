@@ -56,6 +56,31 @@ AREA_CODES = {
     7: FUJAIRAH_CODE
 }
 
+class Plates:
+    dubai = list(DUBAI_CODE)
+    abudhabi = list(ABUDHABI_CODE)
+    sharjah = list(SHARJAH_CODE)
+    ajman = list(AJMAN_CODE)
+    uaq = list(UAQ_CODE)
+    rak = list(RAK_CODE)
+    fujairah = list(FUJAIRAH_CODE)
+
+AREAS = {
+    1: 'Dubai',
+    2: 'Abu Dhabi',
+    3: 'Sharjah',
+    4: 'Ajman',
+    5: 'Umm Al Quwain',
+    6: 'Ras Al Khaimah',
+    7: 'Fujairah'
+}
+
+def plates(area):
+    int(area)
+    if area in AREA_CODES:
+        return list(AREA_CODES[area])
+    else:
+        raise ValueError('Invalid Area Code')
 
 def expiry(plate):
     if plate[0].isalpha() and len(plate) <= 6:
