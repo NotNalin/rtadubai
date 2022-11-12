@@ -8,7 +8,10 @@ URL = "https://www.rta.ae/wps/portal/rta/ae/public-transport/journeyplanner/!ut/
 
 def findstop(keyword):
     data = {"KeyedValue": keyword}
-    cookies = {"com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en"}
+    cookies = {
+        "com.ibm.wps.state.preprocessors.locale.LanguageCookie": "en",
+        "locale_new": "en"
+    }
     response = requests.post(URL + "NJstopfinderShail=/", data=data, cookies=cookies)
     try:
         response = response.json()
