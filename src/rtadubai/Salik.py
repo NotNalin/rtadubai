@@ -152,6 +152,11 @@ def balance_account(account, pin):
 
 def balance(code, number, mobile_number, *, area=1):
     mobile_number = str(mobile_number)
+    try:
+        area = int(area)
+    except:
+        raise ValueError("Invalid area code")
+    
     if mobile_number.startswith("+971"):
         mobile_number = mobile_number[4:]
     elif mobile_number.startswith("971"):
@@ -164,7 +169,7 @@ def balance(code, number, mobile_number, *, area=1):
     if not mobile_number.startswith("5") or len(mobile_number) != 9:
         raise ValueError("Invalid mobile number")
 
-    if int(area) not in AREA_CODES:
+    if area not in AREA_CODES:
         raise ValueError("Invalid area code")
 
     if not code.upper() in AREA_CODES[area]:
