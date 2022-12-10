@@ -116,7 +116,14 @@ def journey_planner(
     if not isinstance(time, datetime):
         raise TypeError("time must be a datetime object")
 
-    if not isinstance(depart, bool) or not isinstance(metro, bool) or not isinstance(bus, bool) or not isinstance(tram, bool) or not isinstance(waterbus, bool) or not isinstance(avoidchanges, bool):
+    if (
+        not isinstance(depart, bool)
+        or not isinstance(metro, bool)
+        or not isinstance(bus, bool)
+        or not isinstance(tram, bool)
+        or not isinstance(waterbus, bool)
+        or not isinstance(avoidchanges, bool)
+    ):
         raise TypeError("depart, metro, bus, tram, waterbus and avoidchanges must be a boolean value")
 
     if depart:
@@ -162,7 +169,7 @@ def journey_planner(
         methods = []
         modes = []
         durations = []
-        for j in i.find_all("li"):
+        for j in i.find(class_="jp_container_list").find("ul").find_all("li", recursive=False):
             time_ = j.find(class_="jp_row").b.text.strip()
             stop = j.find(class_="jp_tmode_station").text.strip()
             try:
@@ -177,7 +184,7 @@ def journey_planner(
                 else:
                     mode = None
             try:
-                duration = j.find(class_="jp_duration").text.strip()
+                duration = " ".join(i.strip().replace("\r\n\t", "").replace("\t", "") for i in j.find(class_="jp_duration").text.strip().split(" "))
             except AttributeError:
                 duration = None
             times.append(time_)
