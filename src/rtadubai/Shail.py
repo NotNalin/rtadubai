@@ -169,6 +169,8 @@ def journey_planner(
         methods = []
         modes = []
         durations = []
+        alternatives = []
+        stopsinbtw = []
         for j in i.find(class_="jp_container_list").find("ul").find_all("li", recursive=False):
             time_ = j.find(class_="jp_row").b.text.strip()
             stop = j.find(class_="jp_tmode_station").text.strip()
@@ -187,6 +189,22 @@ def journey_planner(
                 duration = " ".join(i.strip().replace("\r\n\t", "").replace("\t", "") for i in j.find(class_="jp_duration").text.strip().split(" "))
             except AttributeError:
                 duration = None
+            alternative = j.find_all(class_="alters_inner")
+            if alternative:
+                for amode,atime in [o.text.strip().split(":",1) for o in alternative]:
+                    alternatives.append({"mode": amode.strip(), "time": atime.strip()})
+            else:
+                alternatives.append(None)
+            stps = j.find(class_ = "jp_more_list")
+            if stps:
+                stpsinbtw = []
+                for n in stps.find_all("li"):
+                    t,st  = n.find_all(class_="jp_row")
+                    stpsinbtw.append({"time":t.b.text.strip(), "stop":st.text.strip()})
+                stopsinbtw.append(stpsinbtw)
+            else:
+                stopsinbtw.append(None)
+                    
             times.append(time_)
             stops.append(stop)
             if method:
@@ -207,18 +225,20 @@ def journey_planner(
             else:
                 from_ = stops[j - 1]
                 start = times[j - 1]
-
-            jp.append(
-                {
-                    "starttime": start,
-                    "endtime": times[j],
-                    "from": from_,
-                    "to": stops[j],
-                    "method": methods[j],
-                    "mode": modes[j],
-                    "duration": durations[j],
-                }
-            )
+            jp_ = {
+                "starttime": start,
+                "endtime": times[j],
+                "from": from_,
+                "to": stops[j],
+                "method": methods[j],
+                "mode": modes[j],
+                "duration": durations[j],
+            }
+            if alternatives[j]:
+                jp_["alternatives"] = alternatives[j]
+            if stopsinbtw[j]:
+                jp_["stopsinbtw"] = stopsinbtw[j]
+            jp.append(jp_)
         journeys.append(
             {
                 "starttime": starttime,
