@@ -6,7 +6,11 @@ Unofficial API for RTA (Dubai)
 ```bash
 pip install rtadubai
 ```
+## Installing Development Version
 
+```bash
+pip install git+https://github.com/NotNalin/rtadubai
+```
 ## Examples
 
 ### Getting Nol Card balance
