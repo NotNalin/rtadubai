@@ -3,14 +3,14 @@ from bs4 import BeautifulSoup
 
 import rtadubai.rta_captcha as rta_captcha
 
-URL_DETAILS = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
+URL_DETAILS = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82MGIF8066PQMJDP1OK2=CZ6_N004G041LGU600AURQQVJR30D7=NJgetNolCardBalance=/"
 URL_TRANSACTIONS = "https://www.rta.ae/wps/portal/rta/ae/public-transport/nol/view-history/!ut/p/z1/jY-9DoIwAISfhQcwvZZKylhEC-VPhEbsYhiMIVF0MD6_hsEBI3LbJd-X3BFLGmL79tmd20d369vLux-sd0wUBwsEy-CJDUqTLFeVxylij-xHwK7wIbUJ8zBnEIoTO8fPt1REAWgKtw4gTVnr0tdxRN15Pn5E4r9vR8j3gwHIAa7AaSqyYg1JdVQoVjKlP8DEhwGYGFmdenK_GtOgixfScV5YvGcI/p0/IZ7_KG402B82M068F0QUK5CS641067=CZ6_KG402B82M068F0QUK5CS6410I6=NJvalidateTag=/"
 
 
 def isvalid(nol):
     nol = str(nol).replace(" ", "").strip()
     data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
-    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data, headers=rta_captcha.HEADERS).text, "html.parser")
     if response.find("b") is None:
         return True
     else:
@@ -20,7 +20,7 @@ def isvalid(nol):
 def balance(nol):
     nol = str(nol).replace(" ", "").strip()
     data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
-    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data, headers=rta_captcha.HEADERS).text, "html.parser")
     if response.find("b") is None:
         bal = response.find("strong", class_="font-weight-bolder font-size-18")
         return bal.text
@@ -30,7 +30,7 @@ def balance(nol):
 def details(nol):
     nol = str(nol).replace(" ", "").strip()
     data = {"nolTagId": nol, "captchaResponse": rta_captcha.CAPTCHA}
-    response = BeautifulSoup(requests.post(URL_DETAILS, data=data).text, "html.parser")
+    response = BeautifulSoup(requests.post(URL_DETAILS, data=data, headers=rta_captcha.HEADERS).text, "html.parser")
     r = response.find_all("strong", class_="font-weight-bolder font-size-18")
     if len(r) != 0:
         return {
@@ -57,7 +57,7 @@ def recent(nol, no=1):
 def transactions(nol):
     nol = str(nol).replace(" ", "").strip()
     data = {"tagId": nol, "captcha": rta_captcha.CAPTCHA}
-    response = BeautifulSoup(requests.post(URL_TRANSACTIONS, data=data).text, "html.parser")
+    response = BeautifulSoup(requests.post(URL_TRANSACTIONS, data=data, headers=rta_captcha.HEADERS).text, "html.parser")
 
     if response.find(id="nolhasErr") is None:
         data = response.find_all("span", class_="DataList")
