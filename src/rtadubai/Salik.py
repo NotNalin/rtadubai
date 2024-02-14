@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 import rtadubai.rta_captcha as rta_captcha
 
-URL = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82M83EB0Q64NN5ER3GR6=CZ6_N004G041LGU600AURQQVJR30D7"
+URL = "https://www.rta.ae/wps/portal/rta/ae/home/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi_QwMTNwNTAx93EPNDAwcQ4MCA8O8gowNXMz1w_Wj9KNASgIMLTycDAx9DIxDnIBKAkO8Ai29PD0MjaEKDHAARwP94NQ8_YLs7DRHR0VFAE1hpMw!/p0/IZ7_KG402B82MGIF8066PQMJDP1OK2=CZ6_N004G041LGU600AURQQVJR30D7="
 
 
 DUBAI_CODE = {
@@ -91,7 +91,7 @@ def expiry(plate):
         plate_no = plate[2:]
 
     data = {"plateCode": plate_code.upper(), "plateNo": plate_no, "captchaResponse": rta_captcha.CAPTCHA}
-    r = requests.post(URL + "=NJgetVehicleDetails=/", data=data)
+    r = requests.post(URL + "NJgetVehicleDetails=/", data=data, headers=rta_captcha.HEADERS)
     response = BeautifulSoup(r.text, "html.parser")
     date = response.find("strong", class_="font-weight-bolder font-size-18")
     if date is None:
@@ -127,7 +127,7 @@ def balance_plate(plate, number):
         "salikMobileNo": number,
         "captchaResponse": rta_captcha.CAPTCHA,
     }
-    r = requests.post(URL + "=NJgetSalikBalance=/", data=data)
+    r = requests.post(URL + "NJgetSalikBalance=/", data=data, headers=rta_captcha.HEADERS)
     response = BeautifulSoup(r.text, "html.parser")
     balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
@@ -142,7 +142,7 @@ def balance_account(account, pin):
         "salikPinNo": pin,
         "captchaResponse": rta_captcha.CAPTCHA,
     }
-    r = requests.post(URL + "=NJgetSalikBalance=/", data=data)
+    r = requests.post(URL + "NJgetSalikBalance=/", data=data)
     response = BeautifulSoup(r.text, "html.parser")
     balance = response.find("strong", class_="font-weight-bolder font-size-18")
     if balance is None:
@@ -187,7 +187,7 @@ def balance(code, number, mobile_number, *, area=1):
         "MobileNumber": mobile_number,
         "language": "en",
     }
-    response = requests.post("https://www.salik.ae/surface/financial/balanceenquiry", data=data).json()
+    response = requests.post("https://www.salik.ae/surface/financial/balanceenquiry", data=data, headers=rta_captcha.HEADERS).json()
     if response["Valid"]:
         return response["SalikCredit"]
     else:
